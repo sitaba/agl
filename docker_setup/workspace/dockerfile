@@ -1,0 +1,79 @@
+
+# https://docs.yoctoproject.org/ref-manual/system-requirements.html#supported-linux-distributions
+FROM ubuntu:20.04
+
+
+# https://sleepless-se.net/2018/07/31/docker-build-tzdata-ubuntu/
+RUN apt-get update && apt-get install -y tzdata
+ENV TZ=Asia/Tokyo
+
+
+# https://docs.yoctoproject.org/brief-yoctoprojectqs/index.html
+# https://docs.automotivelinux.org/en/needlefish/#0_Getting_Started/2_Building_AGL_Image/1_Preparing_Your_Build_Host/
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    tar \
+    python3 \
+    gcc \
+    gawk \
+    wget \
+    git \
+    diffstat \
+    unzip \
+    texinfo \
+    gcc \
+    build-essential \
+    chrpath \
+    socat \
+    cpio \
+    python3 \
+    python3-pip \
+    python3-pexpect \
+    xz-utils \
+    debianutils \
+    iputils-ping \
+    python3-git \
+    python3-jinja2 \
+    libegl1-mesa \
+    libsdl1.2-dev \
+    pylint3 \
+    xterm \
+    python3-subunit \
+    mesa-common-dev \
+    zstd \
+    liblz4-tool \
+    curl
+
+
+# If the packages here doesn't exist,  build and runqemu are not available.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    file \
+    iproute2 \
+    qemu
+
+# https://docs.automotivelinux.org/en/needlefish/#0_Getting_Started/2_Building_AGL_Image/2_Downloading_AGL_Software/
+# https://tsuyoshin.hatenablog.com/entry/20200930/1601424481
+RUN curl https://storage.googleapis.com/git-repo-downloads/repo > /usr/local/bin/repo
+RUN chmod a+x /usr/local/bin/repo
+RUN sed -i '1s|python|python3|' /usr/local/bin/repo
+
+
+# need to setup the locale to en_US.UTF-8
+# https://ja-support.renesas.com/knowledgeBase/20134270
+ENV DEBIAN_FRONTEND noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    locales
+RUN dpkg-reconfigure locales && \
+    locale-gen en_US.UTF-8 && \
+    update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+ENV LC_ALL en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US.UTF-8
+
+
+# My util
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    vim \
+    ssh \
+    x11-apps \
+    sudo 
